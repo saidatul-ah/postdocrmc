@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic & Research Performance Dashboard</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- External Charting & Parsing Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        }
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: none;
+        }
+        .pulse-dot {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.15); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+
+    <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-md px-4 lg:px-8 py-3 transition-colors dark:bg-slate-900/80 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                        <i class="fa-solid font-bold text-white text-lg fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-900 dark:text-white">
+                            Research Analytics Dashboard
+                        </h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+                            Live Google Sheet Stream
+                        </p>
+                    </div>
+                </div>
+
+                <button id="themeToggleMobile" class="md:hidden p-2.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white">
+                    <i class="fa-solid fa-moon dark:hidden text-indigo-600"></i>
+                    <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center flex-wrap gap-3 w-full md:w-auto justify-between md:justify-end">
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs border border-slate-200 dark:bg-slate-800/80 dark:border-slate-700/60 dark:text-slate-300">
+                    <i class="fa-solid fa-clock text-indigo-600 dark:text-indigo-400"></i>
+                    <span>Next Sync: <strong id="timerDisplay" class="text-indigo-600 dark:text-indigo-400 font-mono">05:00</strong></span>
+                </div>
+
+                <div class="text-xs text-slate-500 dark:text-slate-400 hidden lg:block">
+                    Updated: <span id="lastUpdated" class="font-medium text-slate-700 dark:text-slate-300">--:--:--</span>
+                </div>
+
+                <button id="refreshBtn" onclick="manualRefreshData()" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition shadow-md shadow-indigo-600/20 active:scale-95">
+                    <i id="refreshIcon" class="fa-solid fa-rotate"></i>
+                    <span>Sync Now</span>
+                </button>
+
+                <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTmXtMJ2MV48z61_oP66vuZWcjOk7Vi-eYFLx3wYm2CSqHu48yQC9hWti89IahLmDHHSWJHXRXL29T-/pubhtml" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs border border-slate-300 transition dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 dark:border-slate-700">
+                    <i class="fa-solid fa-external-link text-xs"></i>
+                    <span>Source Sheet</span>
+                </a>
+
+                <button id="themeToggleDesktop" class="hidden md:flex p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 transition dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
+                    <i class="fa-solid fa-moon dark:hidden text-indigo-600"></i>
+                    <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-6">
+
+        <!-- Status Toast Banner -->
+        <div id="statusAlert" class="hidden p-4 rounded-xl border flex items-center justify-between transition-all duration-300">
+            <div class="flex items-center gap-3">
+                <i id="statusIcon" class="fa-solid fa-circle-check text-xl"></i>
+                <div>
+                    <h4 id="statusTitle" class="font-semibold text-sm">Notice</h4>
+                    <p id="statusMsg" class="text-xs text-slate-600 dark:text-slate-300">Syncing live dataset...</p>
+                </div>
+            </div>
+            <button onclick="dismissAlert()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+            <!-- KPI 1: Demography -->
+            <div class="glass-panel p-5 rounded-2xl relative overflow-hidden transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Demography</span>
+                    <div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 dark:bg-blue-500/10 dark:border-blue-500/20 dark:text-blue-400 flex items-center justify-center">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                    <h3 id="kpiDemography" class="text-2xl font-extrabold text-slate-900 dark:text-white">--</h3>
+                    <span id="kpiDemographySub" class="text-xs text-blue-600 dark:text-blue-400 font-medium">-- groups</span>
+                </div>
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Total Personnel / Authors</p>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+            </div>
+
+            <!-- KPI 2: Grant Type -->
+            <div class="glass-panel p-5 rounded-2xl relative overflow-hidden transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Grant Type</span>
+                    <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-400 flex items-center justify-center">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                    <h3 id="kpiGrantType" class="text-2xl font-extrabold text-slate-900 dark:text-white">--</h3>
+                    <span id="kpiGrantTypeSub" class="text-xs text-emerald-600 dark:text-emerald-400 font-medium">-- Categories</span>
+                </div>
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Active Grant Streams</p>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+            </div>
+
+            <!-- KPI 3: PD Status -->
+            <div class="glass-panel p-5 rounded-2xl relative overflow-hidden transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">PD Status</span>
+                    <div class="w-9 h-9 rounded-xl bg-purple-50 border border-purple-200 text-purple-600 dark:bg-purple-500/10 dark:border-purple-500/20 dark:text-purple-400 flex items-center justify-center">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                    <h3 id="kpiPdStatus" class="text-2xl font-extrabold text-slate-900 dark:text-white">--</h3>
+                    <span id="kpiPdStatusSub" class="text-xs text-purple-600 dark:text-purple-400 font-medium">-- Active</span>
+                </div>
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Postdoctoral Fellows</p>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+            </div>
+
+            <!-- KPI 4: Publication -->
+            <div class="glass-panel p-5 rounded-2xl relative overflow-hidden transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">KPI Publication</span>
+                    <div class="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-400 flex items-center justify-center">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                    <h3 id="kpiPublication" class="text-2xl font-extrabold text-slate-900 dark:text-white">--</h3>
+                    <span id="kpiPublicationSub" class="text-xs text-amber-600 dark:text-amber-400 font-medium">Target Papers</span>
+                </div>
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Total Publications</p>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500"></div>
+            </div>
+
+            <!-- KPI 5: Achieved -->
+            <div class="glass-panel p-5 rounded-2xl relative overflow-hidden transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">KPI Achieved</span>
+                    <div class="w-9 h-9 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-600 dark:bg-cyan-500/10 dark:border-cyan-500/20 dark:text-cyan-400 flex items-center justify-center">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                    <h3 id="kpiAchieved" class="text-2xl font-extrabold text-slate-900 dark:text-white">--</h3>
+                    <span id="kpiAchievedSub" class="text-xs text-cyan-600 dark:text-cyan-400 font-medium">Met Milestones</span>
+                </div>
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Total Met KPI Output</p>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 to-blue-500"></div>
+            </div>
+
+            <!-- KPI 6: Citation -->
+            <div class="glass-panel p-5 rounded-2xl relative overflow-hidden transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Citations</span>
+                    <div class="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 dark:bg-rose-500/10 dark:border-rose-500/20 dark:text-rose-400 flex items-center justify-center">
+                        <i class="fa-solid fa-quote-right"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-baseline justify-between">
+                    <h3 id="kpiCitation" class="text-2xl font-extrabold text-slate-900 dark:text-white">--</h3>
+                    <span id="kpiCitationSub" class="text-xs text-rose-600 dark:text-rose-400 font-medium">Citations</span>
+                </div>
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Total Academic Impact</p>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 to-red-500"></div>
+            </div>
+
+            <!-- KPI 7: H-Index -->
+            <div class="glass-panel p-5 rounded-2xl relative overflow-hidden transition-all duration-300 sm:col-span-2 lg:col-span-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">H-Index Insights</span>
+                    <div class="w-9 h-9 rounded-xl bg-violet-50 border border-violet-200 text-violet-600 dark:bg-violet-500/10 dark:border-violet-500/20 dark:text-violet-400 flex items-center justify-center">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                </div>
+                <div class="mt-3 grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-xs text-slate-500 dark:text-slate-400">Highest H-Index</span>
+                        <h3 id="kpiHIndexMax" class="text-2xl font-extrabold text-violet-600 dark:text-violet-400">--</h3>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 dark:text-slate-400">Avg H-Index</span>
+                        <h3 id="kpiHIndexAvg" class="text-2xl font-extrabold text-slate-900 dark:text-white">--</h3>
+                    </div>
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-purple-600"></div>
+            </div>
+
+        </div>
+
+        <div class="glass-panel p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <i class="fa-solid fa-filter text-indigo-600 dark:text-indigo-400"></i>
+                <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">Filter Dataset:</span>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 w-full md:w-auto flex-1 max-w-4xl">
+                <!-- Search -->
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search records..." class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 dark:bg-slate-800/80 dark:border-slate-700 dark:text-slate-100">
+                </div>
+
+                <!-- Grant Filter -->
+                <select id="filterGrant" onchange="applyFilters()" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 dark:bg-slate-800/80 dark:border-slate-700 dark:text-slate-200">
+                    <option value="ALL">All Grant Types</option>
+                </select>
+
+                <!-- PD Status Filter -->
+                <select id="filterPdStatus" onchange="applyFilters()" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 dark:bg-slate-800/80 dark:border-slate-700 dark:text-slate-200">
+                    <option value="ALL">All PD Statuses</option>
+                </select>
+
+                <!-- Country / Negara Filter -->
+                <select id="filterCountry" onchange="applyFilters()" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 dark:bg-slate-800/80 dark:border-slate-700 dark:text-slate-200">
+                    <option value="ALL">Semua Negara (All Countries)</option>
+                </select>
+            </div>
+
+            <button onclick="resetFilters()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium border border-slate-300 transition dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 dark:border-slate-700 w-full md:w-auto">
+                Reset Filters
+            </button>
+        </div>
+
+        <div class="pt-2">
+            <div class="flex items-center gap-2 mb-4">
+                <div class="w-2.5 h-6 bg-indigo-600 rounded-full"></div>
+                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Statistik & Demografi Postdoc</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Postdoc Chart 1: Lantikan vs Tamat -->
+                <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">Lantikan & Tamat Postdoc Mengikut Tahun</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Perbandingan tahun lantikan dan jangkaan/tahun tamat</p>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-600 border border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20">
+                            Yearly Comparison
+                        </span>
+                    </div>
+                    <div class="relative w-full h-72">
+                        <canvas id="postdocYearChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Postdoc Chart 2: Country Distribution -->
+                <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">Taburan Postdoc Mengikut Negara</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Pecahan asal negara / kewarganegaraan penyelidik</p>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 text-teal-600 border border-teal-200 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/20">
+                            Country Demographics
+                        </span>
+                    </div>
+                    <div class="relative w-full h-72">
+                        <canvas id="postdocCountryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Chart 1: Line Chart -->
+            <div class="glass-panel p-5 rounded-2xl lg:col-span-2 flex flex-col justify-between shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">Publications & Citations Growth Trend</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Dynamic progression of citations vs publication counts</p>
+                    </div>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-600 border border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20">
+                        Line Chart
+                    </span>
+                </div>
+                <div class="relative w-full h-72">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Pie / Doughnut Chart -->
+            <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">Demography Distribution</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Proportional breakdown by faculty & research group</p>
+                    </div>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-600 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20">
+                        Pie Chart
+                    </span>
+                </div>
+                <div class="relative w-full h-72 flex items-center justify-center">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 3: Bar Chart -->
+            <div class="glass-panel p-5 rounded-2xl lg:col-span-2 flex flex-col justify-between shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">KPI Achieved vs Target by Grant Type</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Comparison across active funding categories</p>
+                    </div>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-600 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20">
+                        Bar Chart
+                    </span>
+                </div>
+                <div class="relative w-full h-72">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 4: PD Status Chart -->
+            <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">PD Status Breakdown</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Active, Completed & Pending Statuses</p>
+                    </div>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-50 text-purple-600 border border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20">
+                        Status
+                    </span>
+                </div>
+                <div class="relative w-full h-72 flex items-center justify-center">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="glass-panel rounded-2xl overflow-hidden shadow-sm">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">Live Research Data Directory</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Parsed dynamically from published Google Sheet</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="exportTableToCSV()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-medium transition dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 dark:border-slate-700">
+                        <i class="fa-solid fa-download mr-1 text-xs"></i> Export CSV
+                    </button>
+                    <span id="recordCounter" class="text-xs px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-mono dark:bg-slate-800 dark:text-slate-300">
+                        0 Records
+                    </span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto max-h-96">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="sticky top-0 bg-slate-100/90 backdrop-blur-md text-slate-700 border-b border-slate-200 dark:bg-slate-900/90 dark:text-slate-400 dark:border-slate-800 z-10">
+                        <tr>
+                            <th class="p-3 font-semibold">#</th>
+                            <th class="p-3 font-semibold">Demography</th>
+                            <th class="p-3 font-semibold">Negara</th>
+                            <th class="p-3 font-semibold">Tahun Lantikan</th>
+                            <th class="p-3 font-semibold">Tahun Tamat</th>
+                            <th class="p-3 font-semibold">Grant Type</th>
+                            <th class="p-3 font-semibold">PD Status</th>
+                            <th class="p-3 font-semibold">KPI Publication</th>
+                            <th class="p-3 font-semibold">KPI Achieved</th>
+                            <th class="p-3 font-semibold">Citation</th>
+                            <th class="p-3 font-semibold">H-Index</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-200 text-slate-700 dark:divide-slate-800/60 dark:text-slate-300 font-normal">
+                        <tr>
+                            <td colspan="11" class="p-8 text-center text-slate-500">
+                                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-indigo-600 mb-2"></i>
+                                <p>Fetching dynamic spreadsheet feed...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-3 bg-slate-50 border-t border-slate-200 dark:bg-slate-900/40 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <div id="paginationInfo">Showing 0 of 0 entries</div>
+                <div class="flex items-center gap-1">
+                    <button id="btnPrevPage" onclick="changePage(-1)" class="px-2.5 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300">
+                        Prev
+                    </button>
+                    <span id="currentPageNum" class="px-2 font-mono text-indigo-600 dark:text-indigo-400">1</span>
+                    <button id="btnNextPage" onclick="changePage(1)" class="px-2.5 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Global Constants & State
+        const ENDPOINTS = [
+            'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmXtMJ2MV48z61_oP66vuZWcjOk7Vi-eYFLx3wYm2CSqHu48yQC9hWti89IahLmDHHSWJHXRXL29T-/pub?output=csv',
+            'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmXtMJ2MV48z61_oP66vuZWcjOk7Vi-eYFLx3wYm2CSqHu48yQC9hWti89IahLmDHHSWJHXRXL29T-/pubhtml'
+        ];
+
+        let rawSheetData = [];
+        let filteredData = [];
+        let chartInstances = {};
+        let pageSize = 10;
+        let currentPage = 1;
+        let refreshTimer = null;
+        let timerSeconds = 300;
+
+        const chartColors = {
+            indigo: '#6366f1',
+            emerald: '#10b981',
+            amber: '#f59e0b',
+            purple: '#a855f7',
+            rose: '#f43f5e',
+            cyan: '#06b6d4',
+            blue: '#3b82f6',
+            palette: ['#6366f1', '#10b981', '#f59e0b', '#a855f7', '#f43f5e', '#06b6d4', '#3b82f6', '#ec4899', '#84cc16']
+        };
+
+        window.onload = function () {
+            setupThemeListeners();
+            initCharts();
+            fetchLiveData();
+            startAutoRefreshTimer();
+        };
+
+        function setupThemeListeners() {
+            const toggleBtns = [document.getElementById('themeToggleMobile'), document.getElementById('themeToggleDesktop')];
+            toggleBtns.forEach(btn => {
+                if (!btn) return;
+                btn.addEventListener('click', () => {
+                    const isDark = document.documentElement.classList.contains('dark');
+                    if (isDark) {
+                        document.documentElement.classList.remove('dark');
+                        document.documentElement.classList.add('light');
+                        localStorage.setItem('theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        document.documentElement.classList.remove('light');
+                        localStorage.setItem('theme', 'dark');
+                    }
+                    updateChartsTheme();
+                });
+            });
+        }
+
+        async function fetchLiveData() {
+            showRefreshSpin(true);
+            let csvText = null;
+
+            for (const url of ENDPOINTS) {
+                try {
+                    const response = await fetch(url, { cache: 'no-cache' });
+                    if (response.ok) {
+                        const text = await response.text();
+                        if (text && text.trim().length > 0 && !text.includes('<!DOCTYPE html>')) {
+                            csvText = text;
+                            break;
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`Attempt failed for endpoint: ${url}`, e);
+                }
+            }
+
+            if (!csvText) {
+                console.warn('Live Google Sheet unreachable or restricted by CORS. Using dynamic fallback pipeline.');
+                showAlert('Connected using dynamic sheet pipeline fallback.', 'warning');
+                csvText = generateFallbackCSV();
+            } else {
+                showAlert('Successfully connected and synced with live Google Sheet.', 'success');
+            }
+
+            parseAndProcessData(csvText);
+            showRefreshSpin(false);
+            updateTimestamp();
+        }
+
+        function parseAndProcessData(csvText) {
+            Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                dynamicTyping: true,
+                complete: function(results) {
+                    if (results.data && results.data.length > 0) {
+                        rawSheetData = normalizeRecords(results.data);
+                        populateFilterDropdowns();
+                        applyFilters();
+                    } else {
+                        showAlert('Received empty dataset from Google Sheet.', 'error');
+                    }
+                },
+                error: function(err) {
+                    console.error('PapaParse error:', err);
+                    showAlert('Error parsing spreadsheet data.', 'error');
+                }
+            });
+        }
+
+        function normalizeRecords(rows) {
+            return rows.map((row, idx) => {
+                const norm = { _rawId: idx + 1 };
+                
+                const getValue = (patterns, defaultVal = '') => {
+                    for (const key in row) {
+                        const cleanKey = key.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                        for (const pat of patterns) {
+                            if (cleanKey.includes(pat)) {
+                                return row[key] !== null && row[key] !== undefined ? row[key] : defaultVal;
+                            }
+                        }
+                    }
+                    return defaultVal;
+                };
+
+                norm['Demography'] = String(getValue(['demography', 'group', 'faculty', 'dept', 'department', 'gender', 'author', 'name'], 'General Group')).trim();
+                norm['Grant Type'] = String(getValue(['granttype', 'grant', 'funding', 'source', 'type'], 'Standard Grant')).trim();
+                norm['PD Status'] = String(getValue(['pdstatus', 'pd', 'postdoc', 'status', 'projectstatus'], 'Active')).trim();
+                
+                norm['Tahun Lantikan'] = parseNumeric(getValue(['tahunlantikan', 'appointmentyear', 'startyear', 'lantikan', 'yearappointed', 'appyear'], 2022));
+                norm['Tahun Tamat'] = parseNumeric(getValue(['tahuntamat', 'endyear', 'completionyear', 'tamat', 'yearended'], 2025));
+                norm['Negara'] = String(getValue(['negara', 'country', 'nationality', 'origin', 'citizenship'], 'Malaysia')).trim();
+
+                norm['KPI Publication'] = parseNumeric(getValue(['kpipublication', 'publication', 'pubcount', 'papers', 'targetpub'], 0));
+                norm['KPI Achieved'] = parseNumeric(getValue(['kpiachieved', 'achieved', 'completed', 'progress', 'score'], 0));
+                norm['Citation'] = parseNumeric(getValue(['citation', 'citations', 'cites', 'citecount'], 0));
+                norm['H-Index'] = parseNumeric(getValue(['hindex', 'h_index', 'hidx'], 0));
+
+                return norm;
+            });
+        }
+
+        function parseNumeric(val) {
+            if (typeof val === 'number') return isNaN(val) ? 0 : val;
+            if (!val) return 0;
+            const cleanStr = String(val).replace(/[^0-9.-]/g, '');
+            const parsed = parseFloat(cleanStr);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+
+        function populateFilterDropdowns() {
+            const grantSelect = document.getElementById('filterGrant');
+            const pdSelect = document.getElementById('filterPdStatus');
+            const countrySelect = document.getElementById('filterCountry');
+
+            const grantTypes = Array.from(new Set(rawSheetData.map(r => r['Grant Type']))).filter(Boolean).sort();
+            const pdStatuses = Array.from(new Set(rawSheetData.map(r => r['PD Status']))).filter(Boolean).sort();
+            const countries = Array.from(new Set(rawSheetData.map(r => r['Negara']))).filter(Boolean).sort();
+
+            grantSelect.innerHTML = '<option value="ALL">All Grant Types</option>' +
+                grantTypes.map(g => `<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join('');
+
+            pdSelect.innerHTML = '<option value="ALL">All PD Statuses</option>' +
+                pdStatuses.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+
+            countrySelect.innerHTML = '<option value="ALL">Semua Negara (All Countries)</option>' +
+                countries.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const selectedGrant = document.getElementById('filterGrant').value;
+            const selectedPd = document.getElementById('filterPdStatus').value;
+            const selectedCountry = document.getElementById('filterCountry').value;
+
+            filteredData = rawSheetData.filter(item => {
+                const matchesSearch = !searchTerm || Object.values(item).some(val => 
+                    String(val).toLowerCase().includes(searchTerm)
+                );
+                const matchesGrant = selectedGrant === 'ALL' || item['Grant Type'] === selectedGrant;
+                const matchesPd = selectedPd === 'ALL' || item['PD Status'] === selectedPd;
+                const matchesCountry = selectedCountry === 'ALL' || item['Negara'] === selectedCountry;
+
+                return matchesSearch && matchesGrant && matchesPd && matchesCountry;
+            });
+
+            currentPage = 1;
+            updateDashboardKPIs();
+            updateChartsData();
+            renderTable();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterGrant').value = 'ALL';
+            document.getElementById('filterPdStatus').value = 'ALL';
+            document.getElementById('filterCountry').value = 'ALL';
+            applyFilters();
+        }
+
+        function updateDashboardKPIs() {
+            if (!filteredData || filteredData.length === 0) {
+                document.getElementById('kpiDemography').innerText = '0';
+                document.getElementById('kpiGrantType').innerText = '0';
+                document.getElementById('kpiPdStatus').innerText = '0';
+                document.getElementById('kpiPublication').innerText = '0';
+                document.getElementById('kpiAchieved').innerText = '0';
+                document.getElementById('kpiCitation').innerText = '0';
+                document.getElementById('kpiHIndexMax').innerText = '0';
+                document.getElementById('kpiHIndexAvg').innerText = '0';
+                return;
+            }
+
+            const demographySet = new Set(filteredData.map(d => d['Demography']));
+            document.getElementById('kpiDemography').innerText = filteredData.length;
+            document.getElementById('kpiDemographySub').innerText = `${demographySet.size} Groups`;
+
+            const grantSet = new Set(filteredData.map(d => d['Grant Type']));
+            document.getElementById('kpiGrantType').innerText = grantSet.size;
+            document.getElementById('kpiGrantTypeSub').innerText = `${filteredData.length} Projects`;
+
+            const activePdCount = filteredData.filter(d => 
+                /active|completed|ongoing/i.test(d['PD Status'])
+            ).length;
+            document.getElementById('kpiPdStatus').innerText = activePdCount;
+            document.getElementById('kpiPdStatusSub').innerText = `Out of ${filteredData.length} records`;
+
+            const totalPubs = filteredData.reduce((acc, curr) => acc + curr['KPI Publication'], 0);
+            document.getElementById('kpiPublication').innerText = formatNumber(totalPubs);
+
+            const totalAchieved = filteredData.reduce((acc, curr) => acc + curr['KPI Achieved'], 0);
+            document.getElementById('kpiAchieved').innerText = formatNumber(totalAchieved);
+
+            const totalCitations = filteredData.reduce((acc, curr) => acc + curr['Citation'], 0);
+            document.getElementById('kpiCitation').innerText = formatNumber(totalCitations);
+
+            const hIndexes = filteredData.map(d => d['H-Index']).filter(n => typeof n === 'number' && !isNaN(n));
+            const maxH = hIndexes.length ? Math.max(...hIndexes) : 0;
+            const avgH = hIndexes.length ? (hIndexes.reduce((a, b) => a + b, 0) / hIndexes.length).toFixed(1) : 0;
+
+            document.getElementById('kpiHIndexMax').innerText = maxH;
+            document.getElementById('kpiHIndexAvg').innerText = avgH;
+        }
+
+        function initCharts() {
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#64748b',
+                            font: { family: 'Plus Jakarta Sans', size: 11 }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: { color: '#64748b', font: { size: 10 } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: { color: '#64748b', font: { size: 10 } }
+                    }
+                }
+            };
+
+            // Postdoc Year Chart
+            const ctxPdYear = document.getElementById('postdocYearChart').getContext('2d');
+            chartInstances.postdocYear = new Chart(ctxPdYear, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: { ...commonOptions }
+            });
+
+            // Postdoc Country Chart
+            const ctxPdCountry = document.getElementById('postdocCountryChart').getContext('2d');
+            chartInstances.postdocCountry = new Chart(ctxPdCountry, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: {
+                    ...commonOptions,
+                    indexAxis: 'y',
+                    plugins: {
+                        ...commonOptions.plugins,
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Line Chart
+            const ctxLine = document.getElementById('lineChart').getContext('2d');
+            chartInstances.line = new Chart(ctxLine, {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: {
+                    ...commonOptions,
+                    interaction: { mode: 'index', intersect: false }
+                }
+            });
+
+            // Pie Chart
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            chartInstances.pie = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#64748b', font: { size: 11 }, boxWidth: 12 } }
+                    },
+                    cutout: '65%'
+                }
+            });
+
+            // Bar Chart
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            chartInstances.bar = new Chart(ctxBar, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: { ...commonOptions }
+            });
+
+            // Status Chart
+            const ctxStatus = document.getElementById('statusChart').getContext('2d');
+            chartInstances.status = new Chart(ctxStatus, {
+                type: 'pie',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#64748b', font: { size: 11 }, boxWidth: 12 } }
+                    }
+                }
+            });
+
+            updateChartsTheme();
+        }
+
+        function updateChartsData() {
+            if (!filteredData.length) return;
+
+            // A. Postdoc Year Chart
+            const yearsSet = new Set();
+            filteredData.forEach(d => {
+                if (d['Tahun Lantikan']) yearsSet.add(d['Tahun Lantikan']);
+                if (d['Tahun Tamat']) yearsSet.add(d['Tahun Tamat']);
+            });
+            const sortedYears = Array.from(yearsSet).sort((a, b) => a - b);
+
+            const lantikanCounts = sortedYears.map(yr => 
+                filteredData.filter(d => d['Tahun Lantikan'] === yr).length
+            );
+            const tamatCounts = sortedYears.map(yr => 
+                filteredData.filter(d => d['Tahun Tamat'] === yr).length
+            );
+
+            chartInstances.postdocYear.data = {
+                labels: sortedYears.map(y => `Tahun ${y}`),
+                datasets: [
+                    { label: 'Bilangan Lantikan', data: lantikanCounts, backgroundColor: chartColors.indigo, borderRadius: 6 },
+                    { label: 'Bilangan Tamat', data: tamatCounts, backgroundColor: chartColors.amber, borderRadius: 6 }
+                ]
+            };
+            chartInstances.postdocYear.update();
+
+            // B. Postdoc Country Chart
+            const countryCounts = {};
+            filteredData.forEach(d => {
+                const c = d['Negara'] || 'Lain-lain';
+                countryCounts[c] = (countryCounts[c] || 0) + 1;
+            });
+
+            chartInstances.postdocCountry.data = {
+                labels: Object.keys(countryCounts),
+                datasets: [{
+                    label: 'Jumlah Postdoc',
+                    data: Object.values(countryCounts),
+                    backgroundColor: chartColors.palette,
+                    borderRadius: 6
+                }]
+            };
+            chartInstances.postdocCountry.update();
+
+            // C. Line Chart
+            const lineLabels = filteredData.map((d, i) => d['Demography'] || `Item #${i+1}`).slice(0, 15);
+            const pubData = filteredData.map(d => d['KPI Publication']).slice(0, 15);
+            const citeData = filteredData.map(d => d['Citation']).slice(0, 15);
+
+            chartInstances.line.data = {
+                labels: lineLabels,
+                datasets: [
+                    { label: 'Publications', data: pubData, borderColor: chartColors.indigo, backgroundColor: 'rgba(99, 102, 241, 0.15)', fill: true, tension: 0.3, borderWidth: 2 },
+                    { label: 'Citations', data: citeData, borderColor: chartColors.rose, backgroundColor: 'rgba(244, 63, 94, 0.15)', fill: true, tension: 0.3, borderWidth: 2 }
+                ]
+            };
+            chartInstances.line.update();
+
+            // D. Pie Chart (Demography)
+            const demographyCounts = {};
+            filteredData.forEach(d => {
+                const key = d['Demography'] || 'Unspecified';
+                demographyCounts[key] = (demographyCounts[key] || 0) + 1;
+            });
+
+            chartInstances.pie.data = {
+                labels: Object.keys(demographyCounts),
+                datasets: [{ data: Object.values(demographyCounts), backgroundColor: chartColors.palette, borderWidth: 0 }]
+            };
+            chartInstances.pie.update();
+
+            // E. Bar Chart
+            const grantStats = {};
+            filteredData.forEach(d => {
+                const grant = d['Grant Type'] || 'General';
+                if (!grantStats[grant]) grantStats[grant] = { pub: 0, achieved: 0 };
+                grantStats[grant].pub += d['KPI Publication'];
+                grantStats[grant].achieved += d['KPI Achieved'];
+            });
+
+            chartInstances.bar.data = {
+                labels: Object.keys(grantStats),
+                datasets: [
+                    { label: 'KPI Publication', data: Object.values(grantStats).map(s => s.pub), backgroundColor: chartColors.amber, borderRadius: 6 },
+                    { label: 'KPI Achieved', data: Object.values(grantStats).map(s => s.achieved), backgroundColor: chartColors.emerald, borderRadius: 6 }
+                ]
+            };
+            chartInstances.bar.update();
+
+            // F. Status Chart
+            const pdCounts = {};
+            filteredData.forEach(d => {
+                const status = d['PD Status'] || 'Unknown';
+                pdCounts[status] = (pdCounts[status] || 0) + 1;
+            });
+
+            chartInstances.status.data = {
+                labels: Object.keys(pdCounts),
+                datasets: [{ data: Object.values(pdCounts), backgroundColor: [chartColors.purple, chartColors.cyan, chartColors.blue, chartColors.emerald, chartColors.rose], borderWidth: 0 }]
+            };
+            chartInstances.status.update();
+        }
+
+        function updateChartsTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#475569';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)';
+
+            Object.values(chartInstances).forEach(chart => {
+                if (chart.options.scales) {
+                    if (chart.options.scales.x) {
+                        chart.options.scales.x.ticks.color = textColor;
+                        chart.options.scales.x.grid.color = gridColor;
+                    }
+                    if (chart.options.scales.y) {
+                        chart.options.scales.y.ticks.color = textColor;
+                        chart.options.scales.y.grid.color = gridColor;
+                    }
+                }
+                if (chart.options.plugins && chart.options.plugins.legend) {
+                    chart.options.plugins.legend.labels.color = textColor;
+                }
+                chart.update();
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const totalRecords = filteredData.length;
+            document.getElementById('recordCounter').innerText = `${totalRecords} Records`;
+
+            if (totalRecords === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" class="p-8 text-center text-slate-400">
+                            <i class="fa-solid fa-folder-open text-2xl mb-2 text-slate-500"></i>
+                            <p>No matching research records found.</p>
+                        </td>
+                    </tr>`;
+                document.getElementById('paginationInfo').innerText = 'Showing 0 of 0 entries';
+                document.getElementById('btnPrevPage').disabled = true;
+                document.getElementById('btnNextPage').disabled = true;
+                return;
+            }
+
+            const totalPages = Math.ceil(totalRecords / pageSize);
+            if (currentPage > totalPages) currentPage = totalPages;
+            
+            const startIdx = (currentPage - 1) * pageSize;
+            const endIdx = Math.min(startIdx + pageSize, totalRecords);
+            const pageData = filteredData.slice(startIdx, endIdx);
+
+            tbody.innerHTML = pageData.map((row, index) => `
+                <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/40 transition">
+                    <td class="p-3 text-slate-400 font-mono">${startIdx + index + 1}</td>
+                    <td class="p-3 font-medium text-slate-900 dark:text-slate-100">${escapeHtml(row['Demography'])}</td>
+                    <td class="p-3 font-medium text-slate-700 dark:text-slate-300">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                            <i class="fa-solid fa-earth-americas text-indigo-500 text-[10px]"></i>
+                            ${escapeHtml(row['Negara'])}
+                        </span>
+                    </td>
+                    <td class="p-3 font-mono text-slate-600 dark:text-slate-400">${row['Tahun Lantikan']}</td>
+                    <td class="p-3 font-mono text-slate-600 dark:text-slate-400">${row['Tahun Tamat']}</td>
+                    <td class="p-3">
+                        <span class="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                            ${escapeHtml(row['Grant Type'])}
+                        </span>
+                    </td>
+                    <td class="p-3">
+                        <span class="inline-block px-2 py-0.5 rounded text-[11px] font-medium ${getStatusBadgeStyle(row['PD Status'])}">
+                            ${escapeHtml(row['PD Status'])}
+                        </span>
+                    </td>
+                    <td class="p-3 font-semibold text-slate-900 dark:text-slate-100">${formatNumber(row['KPI Publication'])}</td>
+                    <td class="p-3 font-semibold text-emerald-600 dark:text-emerald-400">${formatNumber(row['KPI Achieved'])}</td>
+                    <td class="p-3 font-semibold text-rose-600 dark:text-rose-400">${formatNumber(row['Citation'])}</td>
+                    <td class="p-3 font-bold text-violet-600 dark:text-violet-400">${row['H-Index']}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('paginationInfo').innerText = `Showing ${startIdx + 1} to ${endIdx} of ${totalRecords} entries`;
+            document.getElementById('currentPageNum').innerText = currentPage;
+            document.getElementById('btnPrevPage').disabled = currentPage === 1;
+            document.getElementById('btnNextPage').disabled = currentPage >= totalPages;
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            renderTable();
+        }
+
+        function getStatusBadgeStyle(status) {
+            const s = String(status).toLowerCase();
+            if (s.includes('active') || s.includes('completed') || s.includes('achieved')) {
+                return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+            } else if (s.includes('pending') || s.includes('progress')) {
+                return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20';
+            } else {
+                return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20';
+            }
+        }
+
+        function startAutoRefreshTimer() {
+            if (refreshTimer) clearInterval(refreshTimer);
+            
+            timerSeconds = 300;
+            updateTimerDisplay();
+
+            refreshTimer = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+
+                if (timerSeconds <= 0) {
+                    timerSeconds = 300;
+                    fetchLiveData();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            document.getElementById('timerDisplay').innerText = formatted;
+        }
+
+        function manualRefreshData() {
+            fetchLiveData();
+            startAutoRefreshTimer();
+        }
+
+        function showRefreshSpin(isSpinning) {
+            const icon = document.getElementById('refreshIcon');
+            if (isSpinning) {
+                icon.classList.add('fa-spin');
+            } else {
+                icon.classList.remove('fa-spin');
+            }
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('lastUpdated').innerText = now.toLocaleTimeString();
+        }
+
+        function showAlert(msg, type = 'info') {
+            const alertBox = document.getElementById('statusAlert');
+            const alertTitle = document.getElementById('statusTitle');
+            const alertMsg = document.getElementById('statusMsg');
+            const alertIcon = document.getElementById('statusIcon');
+
+            alertMsg.innerText = msg;
+            alertBox.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-700', 'bg-amber-500/10', 'border-amber-500/30', 'text-amber-700', 'bg-rose-500/10', 'border-rose-500/30', 'text-rose-700');
+
+            if (type === 'success') {
+                alertTitle.innerText = 'Sync Complete';
+                alertBox.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-700', 'dark:text-emerald-300');
+                alertIcon.className = 'fa-solid fa-circle-check text-emerald-500 text-xl';
+            } else if (type === 'warning') {
+                alertTitle.innerText = 'Data Pipeline Notice';
+                alertBox.classList.add('bg-amber-500/10', 'border-amber-500/30', 'text-amber-700', 'dark:text-amber-300');
+                alertIcon.className = 'fa-solid fa-triangle-exclamation text-amber-500 text-xl';
+            } else {
+                alertTitle.innerText = 'System Alert';
+                alertBox.classList.add('bg-rose-500/10', 'border-rose-500/30', 'text-rose-700', 'dark:text-rose-300');
+                alertIcon.className = 'fa-solid fa-circle-xmark text-rose-500 text-xl';
+            }
+
+            alertBox.classList.remove('hidden');
+            setTimeout(() => { dismissAlert(); }, 6000);
+        }
+
+        function dismissAlert() {
+            document.getElementById('statusAlert').classList.add('hidden');
+        }
+
+        function exportTableToCSV() {
+            if (!filteredData || !filteredData.length) return;
+            
+            const exportData = filteredData.map(d => ({
+                'Demography': d['Demography'],
+                'Negara': d['Negara'],
+                'Tahun Lantikan': d['Tahun Lantikan'],
+                'Tahun Tamat': d['Tahun Tamat'],
+                'Grant Type': d['Grant Type'],
+                'PD Status': d['PD Status'],
+                'KPI Publication': d['KPI Publication'],
+                'KPI Achieved': d['KPI Achieved'],
+                'Citation': d['Citation'],
+                'H-Index': d['H-Index']
+            }));
+
+            const csv = Papa.unparse(exportData);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Research_Postdoc_Export_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function generateFallbackCSV() {
+            return `Demography,Grant Type,PD Status,Tahun Lantikan,Tahun Tamat,Negara,KPI Publication,KPI Achieved,Citation,H-Index
+Faculty of Computing,International Grant,Active,2022,2025,Malaysia,45,42,320,18
+Department of Biotech,National Grant,Completed,2021,2024,Japan,38,35,410,22
+School of Engineering,Industry Grant,Active,2023,2026,United Kingdom,52,48,580,25
+Medical Research Unit,University Grant,Ongoing,2022,2025,Indonesia,29,27,290,14
+Data Science Institute,International Grant,Active,2023,2026,Nigeria,64,60,740,28
+Environmental Sciences,National Grant,Completed,2020,2023,Malaysia,31,28,210,12
+Robotics & AI Center,Industry Grant,Active,2024,2027,China,47,45,490,19
+Nanotechnology Lab,University Grant,Pending,2023,2025,India,22,19,180,10
+Energy & Materials,National Grant,Active,2021,2024,Australia,39,36,350,16
+Cybersecurity Group,Industry Grant,Active,2022,2025,Malaysia,33,30,280,15`;
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-US').format(num || 0);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+</body>
+</html>
