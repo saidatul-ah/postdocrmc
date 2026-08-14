@@ -120,27 +120,27 @@
             </div>
             
             <div class="flex flex-wrap items-center gap-2 text-xs">
-                <!-- Filter Tahun -->
+                <!-- Filter Tahun (Column AD) -->
                 <select id="filter-tahun" onchange="applyFilters()" class="bg-slate-50 border border-slate-300 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-500">
                     <option value="ALL">Semua Tahun Lantikan</option>
                 </select>
 
-                <!-- Filter Fakulti -->
+                <!-- Filter Fakulti (Column X) -->
                 <select id="filter-fakulti" onchange="applyFilters()" class="bg-slate-50 border border-slate-300 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-500">
                     <option value="ALL">Semua Fakulti</option>
                 </select>
 
-                <!-- Filter Research Alliance -->
+                <!-- Filter Research Alliance (Column U) -->
                 <select id="filter-ra" onchange="applyFilters()" class="bg-slate-50 border border-slate-300 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-500">
                     <option value="ALL">Semua Research Alliance</option>
                 </select>
 
-                <!-- Filter Status -->
+                <!-- Filter PD Status (Column H) -->
                 <select id="filter-status" onchange="applyFilters()" class="bg-slate-50 border border-slate-300 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-500">
-                    <option value="ALL">Semua Status Keaktifan</option>
+                    <option value="ALL">Semua PD Status</option>
                 </select>
 
-                <!-- Filter Geran -->
+                <!-- Filter Geran (Column W) -->
                 <select id="filter-geran" onchange="applyFilters()" class="bg-slate-50 border border-slate-300 text-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-500">
                     <option value="ALL">Semua Jenis Geran</option>
                 </select>
@@ -182,7 +182,7 @@
                     </div>
                 </div>
 
-                <!-- Active Post Doc -->
+                <!-- Active Post Doc (PD Status: Active) -->
                 <div class="glass-card rounded-2xl p-5 relative overflow-hidden group hover:border-slate-300 transition duration-300">
                     <div class="flex justify-between items-start">
                         <div>
@@ -238,7 +238,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-slate-800 text-sm flex items-center">
                             <i class="fa-solid fa-layer-group text-brand-600 mr-2"></i>
-                            Statistik Post-Doc Mengikut Jenis Geran (Col W) & Keaktifan Status (Col H)
+                            Statistik Post-Doc Mengikut Jenis Geran
                         </h3>
                     </div>
                     <div class="h-64 relative">
@@ -246,12 +246,12 @@
                     </div>
                 </div>
 
-                <!-- Tahun Lantikan Trend (Col AD) -->
+                <!-- Tahun Lantikan Trend -->
                 <div class="glass-card rounded-2xl p-5">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-slate-800 text-sm flex items-center">
                             <i class="fa-solid fa-calendar-days text-indigo-600 mr-2"></i>
-                            Taburan Mengikut Tahun Lantikan (Col AD)
+                            Taburan Mengikut Tahun Lantikan
                         </h3>
                     </div>
                     <div class="h-64 relative">
@@ -262,33 +262,33 @@
 
             <!-- Charts Grid Row 2 -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Gender Distribution (Col O) -->
+                <!-- Gender Distribution -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="font-bold text-slate-800 text-sm mb-4 flex items-center">
                         <i class="fa-solid fa-venus-mars text-pink-600 mr-2"></i>
-                        Jantina (Col O)
+                        Jantina
                     </h3>
                     <div class="h-56 relative flex items-center justify-center">
                         <canvas id="chart-gender"></canvas>
                     </div>
                 </div>
 
-                <!-- National Status (Col Q) -->
+                <!-- National Status -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="font-bold text-slate-800 text-sm mb-4 flex items-center">
                         <i class="fa-solid fa-id-card text-emerald-600 mr-2"></i>
-                        Status Kewarganegaraan (Col Q)
+                        Status Kewarganegaraan
                     </h3>
                     <div class="h-56 relative flex items-center justify-center">
                         <canvas id="chart-national-status"></canvas>
                     </div>
                 </div>
 
-                <!-- Country/Nationality (Col P) -->
+                <!-- Country/Nationality -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="font-bold text-slate-800 text-sm mb-4 flex items-center">
                         <i class="fa-solid fa-globe text-cyan-600 mr-2"></i>
-                        Kerakyatan / Negara (Col P)
+                        Kerakyatan / Negara
                     </h3>
                     <div class="h-56 relative">
                         <canvas id="chart-nationality"></canvas>
@@ -298,22 +298,22 @@
 
             <!-- Charts Grid Row 3 -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Faculty Distribution (Col X) -->
+                <!-- Faculty Distribution -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="font-bold text-slate-800 text-sm mb-4 flex items-center">
                         <i class="fa-solid fa-building-columns text-amber-600 mr-2"></i>
-                        Taburan Mengikut Fakulti / PTJ (Col X)
+                        Taburan Mengikut Fakulti / PTJ
                     </h3>
                     <div class="h-72 relative">
                         <canvas id="chart-fakulti"></canvas>
                     </div>
                 </div>
 
-                <!-- Research Alliance (Col U) -->
+                <!-- Research Alliance -->
                 <div class="glass-card rounded-2xl p-5">
                     <h3 class="font-bold text-slate-800 text-sm mb-4 flex items-center">
                         <i class="fa-solid fa-atom text-purple-600 mr-2"></i>
-                        Taburan Mengikut Research Alliance (Col U)
+                        Taburan Mengikut Research Alliance (Column U)
                     </h3>
                     <div class="h-72 relative">
                         <canvas id="chart-ra"></canvas>
@@ -397,7 +397,7 @@
             <div class="glass-card rounded-2xl p-4 flex flex-col sm:flex-row gap-3 justify-between items-center">
                 <div class="relative w-full sm:w-80">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
-                    <input type="text" id="directory-search" onkeyup="renderDirectoryTable()" placeholder="Cari PD Name, Fakulti, Geran, Status..." class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:border-brand-500">
+                    <input type="text" id="directory-search" onkeyup="renderDirectoryTable()" placeholder="Cari PD Name, Fakulti, Geran, PD Status..." class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:border-brand-500">
                 </div>
 
                 <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
@@ -419,11 +419,11 @@
                             <tr class="bg-slate-100/80 text-slate-700 uppercase font-bold border-b border-slate-200">
                                 <th class="p-3">Bil</th>
                                 <th class="p-3">PD Name</th>
-                                <th class="p-3">Fakulti (Col X)</th>
-                                <th class="p-3">Research Alliance (Col U)</th>
-                                <th class="p-3">Jenis Geran (Col W)</th>
-                                <th class="p-3">Status (Col H)</th>
-                                <th class="p-3">Warganegara (Col Q / P)</th>
+                                <th class="p-3">Fakulti</th>
+                                <th class="p-3">Research Alliance</th>
+                                <th class="p-3">Jenis Geran</th>
+                                <th class="p-3">PD Status</th>
+                                <th class="p-3">Warganegara</th>
                                 <th class="p-3 text-center">KPI Penerbitan</th>
                                 <th class="p-3 text-center">Tindakan</th>
                             </tr>
@@ -563,88 +563,150 @@
         let selectedKPICategory = 'ALL';
         let chartInstances = {};
 
-        // Fallback Mock Data Generator
-        function generateFallbackData() {
-            const faculties = ['Fakulti Kejuruteraan (FK)', 'Fakulti Sains (FS)', 'Fakulti Komputeran (FC)', 'Fakulti Alam Bina & Ukur (FABU)', 'Fakulti Pengurusan (FP)'];
-            const ras = ['KTHO - Health & Wellness', 'Frontier Materials', 'Smart Digital Community', 'Resource Sustainability', 'Innovative Leadership'];
-            const statuses = ['Aktif', 'Aktif', 'Aktif', 'Tamat Kontrak', 'Diberhentikan'];
-            const grantTypes = ['PDRU', 'PDRU', 'PDRU', 'Postdoc Luar', 'Matching Grant', 'Geran Penyelidikan Utama'];
-            const countries = ['Malaysia', 'Malaysia', 'Indonesia', 'Nigeria', 'Iran', 'Pakistan', 'China', 'India'];
-            const years = ['2021', '2022', '2023', '2024', '2025'];
-
-            const mockNames = [
-                'Dr. Ahmad Zulkifli', 'Dr. Siti Nurhaliza Mohd', 'Dr. Tan Wei Meng', 'Dr. Rajesh Kumar',
-                'Dr. Fatima Al-Zahra', 'Dr. Muhammad Nur Imran', 'Dr. Chen Hui Ling', 'Dr. David Olatunji',
-                'Dr. Sarah Jane Smith', 'Dr. Kevin Tan Kok Wai', 'Dr. Nurul Ain Abdullah', 'Dr. Amir Hossein'
-            ];
-
-            const mock = [];
-            for (let i = 1; i <= 60; i++) {
-                const isPDRU = Math.random() > 0.35 ? 'PDRU' : grantTypes[Math.floor(Math.random() * grantTypes.length)];
-                const target = isPDRU === 'PDRU' ? Math.floor(Math.random() * 4) + 2 : 0;
-                const actual = isPDRU === 'PDRU' ? Math.floor(Math.random() * (target + 2)) : 0;
-                const country = countries[Math.floor(Math.random() * countries.length)];
-                const baseName = mockNames[i % mockNames.length];
-                
-                const ratio = target > 0 ? actual / target : 0;
-                let satLevel = 'Tidak Memuaskan';
-                let kpiStat = 'Not Achieved';
-                if (ratio >= 1.0) { satLevel = 'Cemerlang'; kpiStat = 'Achieved'; }
-                else if (ratio >= 0.5) { satLevel = 'Baik'; kpiStat = 'In Progress'; }
-                else if (ratio >= 0.333) { satLevel = 'Memuaskan'; kpiStat = 'In Progress'; }
-
-                mock.push({
-                    bil: i,
-                    pdName: `${baseName} (${i})`,
-                    status: statuses[Math.floor(Math.random() * statuses.length)],
-                    jantina: i % 2 === 0 ? 'Lelaki' : 'Perempuan',
-                    negara: country,
-                    nationalStatus: country === 'Malaysia' ? 'Warganegara' : 'Bukan Warganegara',
-                    ra: ras[Math.floor(Math.random() * ras.length)],
-                    grantType: isPDRU,
-                    fakulti: faculties[Math.floor(Math.random() * faculties.length)],
-                    tahunLantikan: years[Math.floor(Math.random() * years.length)],
-                    targetPub: target,
-                    achievedPub: actual,
-                    citations: isPDRU === 'PDRU' ? Math.floor(Math.random() * 85) + 5 : 0,
-                    hIndex: isPDRU === 'PDRU' ? Math.floor(Math.random() * 8) + 1 : 0,
-                    kpiStatus: kpiStat,
-                    satisfactoryLevel: satLevel
-                });
-            }
-            return mock;
+        // Helper to normalize PD Status values (Column H)
+        function normalizePDStatus(val) {
+            if (!val) return 'Active';
+            const s = val.toString().trim();
+            if (/active|aktif/i.test(s) && !/inactive|tidak/i.test(s)) return 'Active';
+            if (/kiv/i.test(s)) return 'KIV';
+            if (/inactive|tamat|diberhentikan|tidak|selesai/i.test(s)) return 'Inactive';
+            return s;
         }
 
-        // Fetch Live Data from Google Sheet
+        // Helper badge function for PD Status
+        function getStatusBadge(statusStr) {
+            const normalized = normalizePDStatus(statusStr);
+            if (normalized === 'Active') {
+                return `<span class="px-2.5 py-1 rounded-md text-[11px] bg-emerald-100 text-emerald-800 font-semibold border border-emerald-300 shadow-sm">Active</span>`;
+            } else if (normalized === 'KIV') {
+                return `<span class="px-2.5 py-1 rounded-md text-[11px] bg-amber-100 text-amber-800 font-semibold border border-amber-300 shadow-sm">KIV</span>`;
+            } else if (normalized === 'Inactive') {
+                return `<span class="px-2.5 py-1 rounded-md text-[11px] bg-rose-100 text-rose-800 font-semibold border border-rose-300 shadow-sm">Inactive</span>`;
+            } else {
+                return `<span class="px-2.5 py-1 rounded-md text-[11px] bg-slate-100 text-slate-700 font-semibold border border-slate-300">${statusStr}</span>`;
+            }
+        }
+
+        // Generate fallback mock data if fetch fails
+        function generateFallbackData() {
+            const sampleRA = ['Health & Wellness', 'Smart Digital Solutions', 'Frontier Materials', 'Resource Sustainability', 'Innovative Processing'];
+            const sampleFakulti = ['Fakulti Kejuruteraan', 'Fakulti Sains', 'Fakulti Komputeran', 'Fakulti Pengurusan', 'Fakulti Alam Bina'];
+            const sampleGrant = ['PDRU', 'PDRU', 'PDRU', 'Geran Universiti', 'Geran Luar'];
+            const sampleStatus = ['Active', 'Active', 'Inactive', 'KIV', 'Active'];
+            const sampleCountries = ['Malaysia', 'Malaysia', 'Indonesia', 'Nigeria', 'Pakistan', 'China'];
+
+            const list = [];
+            for (let i = 1; i <= 25; i++) {
+                const grant = sampleGrant[i % sampleGrant.length];
+                const isPDRU = grant === 'PDRU';
+                const target = isPDRU ? 3 : 0;
+                const achieved = isPDRU ? (i % 4) : 0;
+                const country = sampleCountries[i % sampleCountries.length];
+                
+                list.push({
+                    bil: i,
+                    pdName: `Dr. Postdoc Candidate ${i}`,
+                    status: sampleStatus[i % sampleStatus.length],
+                    jantina: i % 2 === 0 ? 'Perempuan' : 'Lelaki',
+                    negara: country,
+                    nationalStatus: country === 'Malaysia' ? 'Warganegara' : 'Bukan Warganegara',
+                    ra: sampleRA[i % sampleRA.length],
+                    grantType: grant,
+                    fakulti: sampleFakulti[i % sampleFakulti.length],
+                    tahunLantikan: `${2020 + (i % 5)}`,
+                    targetPub: target,
+                    achievedPub: achieved,
+                    citations: isPDRU ? achieved * 12 + 5 : 0,
+                    hIndex: isPDRU ? Math.min(6, achieved + 1) : 0,
+                    kpiStatus: isPDRU ? (achieved >= target ? 'Achieved' : 'Not Achieved') : 'N/A',
+                    satisfactoryLevel: isPDRU ? (achieved >= target ? 'Cemerlang' : achieved >= 2 ? 'Baik' : achieved === 1 ? 'Memuaskan' : 'Tidak Memuaskan') : 'N/A'
+                });
+            }
+            return list;
+        }
+
+        // Fetch Live Data from Google Sheets CSV
         async function fetchGoogleSheetData() {
-            document.getElementById('loading-spinner').classList.remove('hidden');
-            const badgeText = document.getElementById('data-status-text');
-            const badgeContainer = document.getElementById('data-status-badge');
+            const statusText = document.getElementById('data-status-text');
+            const statusBadge = document.getElementById('data-status-badge');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            
+            if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+            if (statusText) statusText.textContent = 'Memuat turun data live...';
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 second timeout limit
 
             try {
-                const response = await fetch(SHEET_CSV_URL);
-                if (!response.ok) throw new Error("Gagal mengambil data dari Google Sheet");
-                const csvText = await response.text();
+                const response = await fetch(SHEET_CSV_URL, { 
+                    signal: controller.signal,
+                    cache: 'no-cache'
+                });
+                clearTimeout(timeoutId);
 
+                if (!response.ok) throw new Error(`HTTP status: ${response.status}`);
+
+                const csvText = await response.text();
+                
                 Papa.parse(csvText, {
-                    header: false,
                     skipEmptyLines: true,
                     complete: function(results) {
-                        processParsedCSV(results.data);
-                        badgeText.textContent = 'Data Langsung Google Sheets';
-                        badgeContainer.className = 'hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+                        if (results.data && results.data.length > 1) {
+                            if (statusText) statusText.textContent = 'Data Langsung Google Sheets';
+                            if (statusBadge) {
+                                statusBadge.className = 'hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+                            }
+                            processParsedCSV(results.data);
+                        } else {
+                            throw new Error('Data CSV kosong.');
+                        }
+                    },
+                    error: function(err) {
+                        console.warn('PapaParse error:', err);
+                        useFallbackData('Gagal memproses CSV Google Sheets');
                     }
                 });
             } catch (error) {
-                console.warn("Menggunakan Fallback Mock Data kerana:", error.message);
-                rawData = generateFallbackData();
-                badgeText.textContent = 'Mod Offline / Mock Data';
-                badgeContainer.className = 'hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200';
-                initDashboardData();
+                console.warn('Gagal memuat turun data dari Google Sheets:', error);
+                useFallbackData('Mengguna Data Contoh (Fallback)');
             }
         }
 
-        // Parse CSV Row Data dynamically checking for headers
+        function useFallbackData(statusMsg) {
+            const statusText = document.getElementById('data-status-text');
+            const statusBadge = document.getElementById('data-status-badge');
+            
+            if (statusText) statusText.textContent = statusMsg || 'Data Contoh (Fallback)';
+            if (statusBadge) {
+                statusBadge.className = 'hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200';
+            }
+            
+            rawData = generateFallbackData();
+            initDashboardData();
+        }
+
+        // Precise Column Index Finder to prevent ambiguous keyword matches
+        function getColIdx(headers, keywords, fallbackIdx) {
+            for (let i = 0; i < headers.length; i++) {
+                const h = headers[i];
+                for (const kw of keywords) {
+                    if (kw === 'ra') {
+                        if (h === 'ra' || h === 'research alliance' || h.includes('research alliance')) return i;
+                    } else if (kw === 'status') {
+                        if (h === 'pd status' || h === 'status pd' || h === 'status keaktifan') return i;
+                    } else if (kw === 'geran') {
+                        if (h === 'grant type' || h === 'jenis geran') return i;
+                    } else if (kw === 'tahun') {
+                        if (h === 'tahun lantikan' || h.includes('tahun lantikan')) return i;
+                    } else {
+                        if (h.includes(kw)) return i;
+                    }
+                }
+            }
+            return (fallbackIdx < headers.length) ? fallbackIdx : fallbackIdx;
+        }
+
+        // Parse CSV Row Data
         function processParsedCSV(rows) {
             if (!rows || rows.length <= 1) {
                 rawData = generateFallbackData();
@@ -654,26 +716,22 @@
 
             const headers = rows[0].map(h => (h || '').toString().trim().toLowerCase());
             
-            function findColIdx(keywords, fallback) {
-                const idx = headers.findIndex(h => keywords.some(k => h.includes(k)));
-                return idx !== -1 ? idx : fallback;
-            }
-
-            const pdNameColIdx = findColIdx(['pd name', 'nama pd', 'name'], 1);
-            const statusColIdx = findColIdx(['status pd', 'pd status', 'status keaktifan', 'status'], 7);
-            const genderColIdx = findColIdx(['jantina', 'gender'], 14);
-            const countryColIdx = findColIdx(['negara', 'nationality', 'country'], 15);
-            const natStatusColIdx = findColIdx(['national status', 'warganegara'], 16);
-            const raColIdx = findColIdx(['research alliance', 'ra'], 20);
-            const grantTypeColIdx = findColIdx(['grant type', 'jenis geran', 'geran'], 22);
-            const fakultiColIdx = findColIdx(['fakulti', 'faculty', 'ptj'], 23);
-            const yearColIdx = findColIdx(['tahun lantikan', 'tahun', 'year'], 29);
-            const targetColIdx = findColIdx(['kpi publication target', 'publication target', 'target pub', 'target'], 30);
-            const achievedColIdx = findColIdx(['kpi publication achieved', 'publication achieved', 'achieved pub', 'achieved'], 31);
-            const citationColIdx = findColIdx(['citation', 'citations'], 32);
-            const hIndexColIdx = findColIdx(['h-index', 'h index', 'hindex'], 33);
-            const kpiStatusColIdx = findColIdx(['kpi achievement status', 'kpi status', 'achievement status'], 34);
-            const satLevelColIdx = findColIdx(['satisfactory level', 'satisfaction level', 'tahap kepuasan', 'satisfactory'], 35);
+            // Map exact indices based on CSV headers
+            const pdNameColIdx = getColIdx(headers, ['pd name', 'nama pd', 'name'], 1);
+            const statusColIdx = getColIdx(headers, ['pd status', 'status pd', 'status keaktifan', 'status'], 7); // Column H
+            const genderColIdx = getColIdx(headers, ['jantina', 'gender'], 14); // Column O
+            const countryColIdx = getColIdx(headers, ['negara', 'nationality', 'country'], 15); // Column P
+            const natStatusColIdx = getColIdx(headers, ['national status', 'warganegara'], 16); // Column Q
+            const raColIdx = getColIdx(headers, ['research alliance', 'ra'], 20); // Column U
+            const grantTypeColIdx = getColIdx(headers, ['grant type', 'jenis geran', 'geran'], 22); // Column W
+            const fakultiColIdx = getColIdx(headers, ['fakulti', 'faculty', 'ptj'], 23); // Column X
+            const yearColIdx = getColIdx(headers, ['tahun lantikan', 'tahun'], 29); // Column AD
+            const targetColIdx = getColIdx(headers, ['kpi publication target', 'publication target', 'target pub'], 30);
+            const achievedColIdx = getColIdx(headers, ['kpi publication achieved', 'publication achieved', 'achieved pub'], 31);
+            const citationColIdx = getColIdx(headers, ['citation', 'citations'], 32);
+            const hIndexColIdx = getColIdx(headers, ['h-index', 'h index', 'hindex'], 33);
+            const kpiStatusColIdx = getColIdx(headers, ['kpi achievement status', 'kpi status', 'achievement status'], 34);
+            const satLevelColIdx = getColIdx(headers, ['satisfactory level', 'satisfaction level', 'tahap kepuasan'], 35);
 
             const parsed = [];
             for (let i = 1; i < rows.length; i++) {
@@ -694,15 +752,17 @@
 
                 const country = (row[countryColIdx] || 'Malaysia').trim();
                 const natStatus = (row[natStatusColIdx] || (country.toLowerCase() === 'malaysia' ? 'Warganegara' : 'Bukan Warganegara')).trim();
+                const rawStatus = (row[statusColIdx] || 'Active').trim();
+                const raVal = (row[raColIdx] || 'Umum').trim();
 
                 parsed.push({
                     bil: i,
                     pdName: pdName,
-                    status: (row[statusColIdx] || 'Aktif').trim(),
+                    status: normalizePDStatus(rawStatus),
                     jantina: (row[genderColIdx] || 'Lelaki').trim(),
                     negara: country,
                     nationalStatus: natStatus,
-                    ra: (row[raColIdx] || 'Umum').trim(),
+                    ra: raVal || 'Umum',
                     grantType: grantTypeVal,
                     fakulti: (row[fakultiColIdx] || 'Fakulti Utama').trim(),
                     tahunLantikan: (row[yearColIdx] || '2023').trim(),
@@ -734,18 +794,18 @@
             const geranSet = new Set();
 
             rawData.forEach(item => {
-                if (item.tahunLantikan) tahunSet.add(item.tahunLantikan);
-                if (item.fakulti) fakultiSet.add(item.fakulti);
-                if (item.ra) raSet.add(item.ra);
-                if (item.status) statusSet.add(item.status);
-                if (item.grantType) geranSet.add(item.grantType);
+                if (item.tahunLantikan) tahunSet.add(item.tahunLantikan.trim());
+                if (item.fakulti) fakultiSet.add(item.fakulti.trim());
+                if (item.ra) raSet.add(item.ra.trim());
+                if (item.status) statusSet.add(item.status.trim());
+                if (item.grantType) geranSet.add(item.grantType.trim());
             });
 
-            fillSelect('filter-tahun', Array.from(tahunSet).sort());
-            fillSelect('filter-fakulti', Array.from(fakultiSet).sort());
-            fillSelect('filter-ra', Array.from(raSet).sort());
-            fillSelect('filter-status', Array.from(statusSet).sort());
-            fillSelect('filter-geran', Array.from(geranSet).sort());
+            fillSelect('filter-tahun', Array.from(tahunSet).filter(Boolean).sort());
+            fillSelect('filter-fakulti', Array.from(fakultiSet).filter(Boolean).sort());
+            fillSelect('filter-ra', Array.from(raSet).filter(Boolean).sort());
+            fillSelect('filter-status', Array.from(statusSet).filter(Boolean).sort());
+            fillSelect('filter-geran', Array.from(geranSet).filter(Boolean).sort());
         }
 
         function fillSelect(elementId, items) {
@@ -799,7 +859,7 @@
 
         function renderExecutiveSummary() {
             const totalPD = filteredData.length;
-            const aktifPD = filteredData.filter(d => d.status.toLowerCase().includes('aktif')).length;
+            const aktifPD = filteredData.filter(d => d.status === 'Active').length;
             const pdruList = filteredData.filter(d => d.grantType.toUpperCase().includes('PDRU'));
             const pdruCount = pdruList.length;
 
@@ -971,7 +1031,7 @@
                 }
             });
 
-            // 7. Research Alliance
+            // 7. Research Alliance (Column U)
             const raMap = {};
             filteredData.forEach(d => raMap[d.ra] = (raMap[d.ra] || 0) + 1);
             chartInstances.ra = new Chart(document.getElementById('chart-ra'), {
@@ -999,7 +1059,6 @@
         function renderPublicationRecords() {
             const pdruData = filteredData.filter(d => d.grantType.toUpperCase().includes('PDRU'));
             
-            // Calculate sum for Target and Achieved
             let totalTarget = 0;
             let totalAchieved = 0;
             let totalCitations = 0;
@@ -1007,7 +1066,7 @@
 
             pdruData.forEach(d => {
                 totalTarget += d.targetPub || 0;
-                totalAchieved += d.achievedPub || 0; // SUM on KPI Publication Achieved
+                totalAchieved += d.achievedPub || 0;
                 totalCitations += d.citations || 0;
                 totalHIndex += d.hIndex || 0;
             });
@@ -1096,6 +1155,7 @@
                 return d.pdName.toLowerCase().includes(searchVal) ||
                        d.fakulti.toLowerCase().includes(searchVal) ||
                        d.ra.toLowerCase().includes(searchVal) ||
+                       d.status.toLowerCase().includes(searchVal) ||
                        d.grantType.toLowerCase().includes(searchVal);
             });
 
@@ -1133,7 +1193,7 @@
                         <td class="p-3">${row.fakulti}</td>
                         <td class="p-3">${row.ra}</td>
                         <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] ${isPDRU ? 'bg-purple-100 text-purple-800 border border-purple-200 font-bold' : 'bg-slate-100 text-slate-600'}">${row.grantType}</span></td>
-                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] ${row.status.toLowerCase().includes('aktif') ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${row.status}</span></td>
+                        <td class="p-3">${getStatusBadge(row.status)}</td>
                         <td class="p-3">${row.nationalStatus} (${row.negara})</td>
                         <td class="p-3 text-center">${kpiBadge}</td>
                         <td class="p-3 text-center">
@@ -1170,7 +1230,6 @@
                 const achieved = d.achievedPub || 0;
                 const ratio = target > 0 ? achieved / target : 0;
 
-                // Priority 1: Use Satisfactory Level column from CSV if specified
                 if (sat.includes('cemerlang')) {
                     cemerlang.push(d);
                 } else if (sat.includes('baik')) {
@@ -1179,9 +1238,7 @@
                     memuaskan.push(d);
                 } else if (sat.includes('tidak memuaskan') || sat.includes('gagal')) {
                     tidakMemuaskan.push(d);
-                } 
-                // Priority 2: Fallback calculation based on Achieved vs Target Ratio
-                else {
+                } else {
                     if (target > 0 && ratio >= 1.0) {
                         cemerlang.push(d);
                     } else if (ratio >= 0.5) {
@@ -1309,23 +1366,23 @@
 
                 <div class="grid grid-cols-2 gap-3 text-xs pt-2">
                     <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-                        <span class="text-slate-500 block text-[10px]">Status Keaktifan (Col H):</span>
-                        <b class="${item.status.toLowerCase().includes('aktif') ? 'text-emerald-700' : 'text-rose-700'}">${item.status}</b>
+                        <span class="text-slate-500 block text-[10px]">PD Status:</span>
+                        <b>${getStatusBadge(item.status)}</b>
                     </div>
                     <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-                        <span class="text-slate-500 block text-[10px]">Jenis Geran (Col W):</span>
+                        <span class="text-slate-500 block text-[10px]">Jenis Geran:</span>
                         <b class="text-purple-700">${item.grantType}</b>
                     </div>
                     <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-                        <span class="text-slate-500 block text-[10px]">Jantina (Col O):</span>
+                        <span class="text-slate-500 block text-[10px]">Jantina:</span>
                         <b class="text-slate-800">${item.jantina}</b>
                     </div>
                     <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-                        <span class="text-slate-500 block text-[10px]">Kewarganegaraan (Col Q / P):</span>
+                        <span class="text-slate-500 block text-[10px]">Kewarganegaraan:</span>
                         <b class="text-slate-800">${item.nationalStatus} (${item.negara})</b>
                     </div>
                     <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-                        <span class="text-slate-500 block text-[10px]">Tahun Lantikan (Col AD):</span>
+                        <span class="text-slate-500 block text-[10px]">Tahun Lantikan:</span>
                         <b class="text-slate-800">${item.tahunLantikan}</b>
                     </div>
                     <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
